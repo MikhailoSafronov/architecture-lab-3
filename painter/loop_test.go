@@ -64,11 +64,13 @@ func (tr *testReceiver) Update(t screen.Texture) {
 
 type mockScreen struct{}
 
-func (m mockScreen) NewBuffer(size image.Point) (screen.Buffer, error) {
+// Виправлено: додано _ для ігнорування параметра size
+func (m mockScreen) NewBuffer(_ image.Point) (screen.Buffer, error) {
 	panic("implement me")
 }
 
-func (m mockScreen) NewTexture(size image.Point) (screen.Texture, error) {
+// Виправлено: додано _ для ігнорування параметра size
+func (m mockScreen) NewTexture(_ image.Point) (screen.Texture, error) {
 	return new(mockTexture), nil
 }
 
