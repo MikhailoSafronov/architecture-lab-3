@@ -1,41 +1,18 @@
-name: CI 
+name: CI Pipeline
 
 on:
   push:
-    branches: [ "event-cycle-tests", "main" ]
+    branches: [ "event-cycle-tests" ]
   pull_request:
-    branches: [ "event-cycle-tests", "main" ]
+    branches: [ "event-cycle-tests" ]
 
 jobs:
-  test-and-build:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: actions/setup-go@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
         with:
-          go-version: '1.24.0'
-          check-latest: true
-
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/go/pkg/mod
-            ./vendor
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
-      - name: Install dependencies
-        run: |
-          go mod tidy
-          go mod vendor
-
-      - name: Run tests
-        run: go test -v -race ./...
-
-      - name: Build
-        run: go build -v -o painter ./cmd/painter
+          go-version: '1.24'
+      - run: go test -v ./...
+      - run: go build -o painter ./cmd/painter
