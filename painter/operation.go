@@ -15,3 +15,4 @@ func (m Move) Draw(t Texture) {
 func (f TFigure) Draw(t Texture) {
     // реализация
 }
+
