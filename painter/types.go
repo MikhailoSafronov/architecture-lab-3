@@ -19,4 +19,4 @@ type TFigure struct {
 
 type WhiteFill struct{}
 type GreenFill struct{}
-type UpdateOp struct{} // Перенесено из op.go
+type UpdateOp struct{} // Только здесь!
