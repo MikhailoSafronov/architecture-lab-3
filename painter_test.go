@@ -1,41 +1,92 @@
 package painter_test
 
 import (
+	"strings"
 	"testing"
 	"github.com/roman-mazur/architecture-lab-3/painter"
 	"github.com/roman-mazur/architecture-lab-3/painter/lang"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLoop_Post(t *testing.T) {
-	var l painter.Loop
-	l.Post(painter.OperationFunc(func(painter.Texture) {
-		// Тестовая операция
-	}))
-	assert.NotNil(t, l, "Loop should be initialized")
+
+func TestLoop(t *testing.T) {
+	t.Run("Post and receive operation", func(t *testing.T) {
+		var l painter.Loop
+		called := false
+		
+		l.Post(painter.OperationFunc(func(painter.Texture) {
+			called = true
+		}))
+		
+		l.Start()
+		defer l.Stop()
+		
+		assert.Eventually(t, func() bool { return called }, time.Second, 10*time.Millisecond)
+	})
 }
 
-func TestParser_ValidBgRect(t *testing.T) {
+
+func TestParser(t *testing.T) {
 	p := lang.Parser{}
-	ops, err := p.Parse("bgrect 0.1 0.1 0.5 0.5")
-	assert.NoError(t, err)
-	assert.IsType(t, painter.BgRect{}, ops[0], "Should return BgRect operation")
+	
+	tests := []struct {
+		name    string
+		input   string
+		wantErr bool
+		wantOp  painter.Operation
+	}{
+		{
+			name:    "valid bgrect",
+			input:   "bgrect 0.1 0.1 0.5 0.5",
+			wantOp:  painter.BgRect{X1: 0.1, Y1: 0.1, X2: 0.5, Y2: 0.5},
+		},
+		{
+			name:    "invalid bgrect",
+			input:   "bgrect invalid",
+			wantErr: true,
+		},
+		{
+			name:    "move command",
+			input:   "move 0.2 0.3",
+			wantOp:  painter.Move{X: 0.2, Y: 0.3},
+		},
+		{
+			name:    "white command",
+			input:   "white",
+			wantOp:  painter.WhiteFill{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ops, err := p.Parse(strings.NewReader(tt.input))
+			
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
+			
+			assert.NoError(t, err)
+			assert.IsType(t, tt.wantOp, ops[0])
+		})
+	}
 }
 
-func TestParser_InvalidBgRect(t *testing.T) {
-	p := lang.Parser{}
-	_, err := p.Parse("bgrect invalid")
-	assert.Error(t, err, "Should return error for invalid command")
-}
 
-func TestMoveOperation(t *testing.T) {
-	moveOp := painter.Move{OffsetX: 0.5, OffsetY: 0.5}
-	assert.Equal(t, 0.5, moveOp.OffsetX, "Move operation should store X offset")
-	assert.Equal(t, 0.5, moveOp.OffsetY, "Move operation should store Y offset")
-}
+func TestOperations(t *testing.T) {
+	t.Run("BgRect coordinates", func(t *testing.T) {
+		rect := painter.BgRect{X1: 0.1, Y1: 0.2, X2: 0.3, Y2: 0.4}
+		assert.Equal(t, float32(0.1), rect.X1)
+		assert.Equal(t, float32(0.4), rect.Y2)
+	})
 
-func TestTFigure(t *testing.T) {
-	figure := painter.TFigure{CenterX: 0.5, CenterY: 0.5}
-	assert.Equal(t, 0.5, figure.CenterX, "TFigure should store X coordinate")
-	assert.Equal(t, 0.5, figure.CenterY, "TFigure should store Y coordinate")
+	t.Run("Move operation", func(t *testing.T) {
+		move := painter.Move{X: 0.5, Y: 0.6}
+		assert.Equal(t, float32(0.5), move.X)
+	})
+
+	t.Run("TFigure position", func(t *testing.T) {
+		fig := painter.TFigure{X: 0.7, Y: 0.8}
+		assert.Equal(t, float32(0.7), fig.X)
+	})
 }
