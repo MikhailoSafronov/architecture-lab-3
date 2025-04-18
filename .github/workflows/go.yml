@@ -1,4 +1,4 @@
-name: CI Pipeline 
+name: CI Pipeline for Go 1.24
 
 on:
   push:
@@ -9,17 +9,14 @@ on:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go-version: ['1.24.0']
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Go ${{ matrix.go-version }}
+      - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: ${{ matrix.go-version }}
+          go-version: '1.24.0'
           check-latest: true
 
       - name: Cache dependencies
@@ -36,23 +33,9 @@ jobs:
         run: |
           go mod tidy
           go mod vendor
-          go get -u golang.org/x/mobile@latest
-          go get -u golang.org/x/exp@latest
 
-      - name: Run tests with coverage
-        run: |
-          go test -v -race -coverprofile=coverage.out ./...
-          go tool cover -func=coverage.out
+      - name: Run tests
+        run: go test -v -race ./...
 
-      - name: Build painter
-        run: |
-          go build -v -o painter ./cmd/painter
-          ./painter -version || echo "Build successful but no version flag"
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: painter-bin-${{ matrix.go-version }}
-          path: |
-            ./painter
-            coverage.out
+      - name: Build
+        run: go build -v -o painter ./cmd/painter
