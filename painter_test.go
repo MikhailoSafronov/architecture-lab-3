@@ -1,39 +1,41 @@
-package painter
+package painter_test
 
-import "testing"
+import (
+	"testing"
+	"github.com/roman-mazur/architecture-lab-3/painter"
+	"github.com/roman-mazur/architecture-lab-3/painter/lang"
+	"github.com/stretchr/testify/assert"
+)
 
-func TestBrushInitialization(t *testing.T) {
-    b := Brush{
-        Size: 10,
-        Color: "black",
-    }
-
-    if b.Size != 10 || b.Color != "black" {
-        t.Errorf("Expected Size=10 and Color=black, got Size=%d and Color=%s", b.Size, b.Color)
-    }
+func TestLoop_Post(t *testing.T) {
+	var l painter.Loop
+	l.Post(painter.OperationFunc(func(painter.Texture) {
+		// Тестовая операция
+	}))
+	assert.NotNil(t, l, "Loop should be initialized")
 }
 
-func TestTFigureInitialization(t *testing.T) {
-    f := TFigure{
-        X:      5,
-        Y:      10,
-        Width:  100,
-        Height: 50,
-    }
+func TestParser_ValidBgRect(t *testing.T) {
+	p := lang.Parser{}
+	ops, err := p.Parse("bgrect 0.1 0.1 0.5 0.5")
+	assert.NoError(t, err)
+	assert.IsType(t, painter.BgRect{}, ops[0], "Should return BgRect operation")
+}
 
-    if f.X != 5 || f.Y != 10 || f.Width != 100 || f.Height != 50 {
-        t.Errorf("TFigure init failed: got %+v", f)
-    }
+func TestParser_InvalidBgRect(t *testing.T) {
+	p := lang.Parser{}
+	_, err := p.Parse("bgrect invalid")
+	assert.Error(t, err, "Should return error for invalid command")
 }
 
 func TestMoveOperation(t *testing.T) {
-    m := Move{
-        DX: 3,
-        DY: -2,
-    }
-
-    if m.DX != 3 || m.DY != -2 {
-        t.Errorf("Expected DX=3 and DY=-2, got DX=%d and DY=%d", m.DX, m.DY)
-    }
+	moveOp := painter.Move{OffsetX: 0.5, OffsetY: 0.5}
+	assert.Equal(t, 0.5, moveOp.OffsetX, "Move operation should store X offset")
+	assert.Equal(t, 0.5, moveOp.OffsetY, "Move operation should store Y offset")
 }
 
+func TestTFigure(t *testing.T) {
+	figure := painter.TFigure{CenterX: 0.5, CenterY: 0.5}
+	assert.Equal(t, 0.5, figure.CenterX, "TFigure should store X coordinate")
+	assert.Equal(t, 0.5, figure.CenterY, "TFigure should store Y coordinate")
+}
