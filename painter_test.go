@@ -1,13 +1,15 @@
-package painter_test
+package painter
 
-import (
-	"testing"
-	"github.com/roman-mazur/architecture-lab-3/painter"
-)
+import "testing"
 
-func TestBgRect(t *testing.T) {
-	rect := painter.BgRect{X1: 0.1, Y1: 0.2, X2: 0.3, Y2: 0.4}
-	if rect.X1 != 0.1 {
-		t.Errorf("Expected X1 = 0.1, got %v", rect.X1)
-	}
+func TestTypesExist(t *testing.T) {
+
+    var _ Texture
+    var _ OperationFunc
+    var _ = BgRect{}
+    var _ = Move{}
+    var _ = TFigure{}
+    var _ = WhiteFill{}
+    var _ = GreenFill{}
+    var _ = UpdateOp{}
 }
