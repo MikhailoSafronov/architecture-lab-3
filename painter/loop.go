@@ -2,59 +2,60 @@ package painter
 
 import (
 	"image"
+	"sync"
 
 	"golang.org/x/exp/shiny/screen"
 )
 
-// Receiver отримує текстуру, яка була підготовлена в результаті виконання команд у циклі подій.
-type Receiver interface {
-	Update(t screen.Texture)
-}
-
-// Loop реалізує цикл подій для формування текстури отриманої через виконання операцій отриманих з внутрішньої черги.
 type Loop struct {
 	Receiver Receiver
-
-	next screen.Texture // текстура, яка зараз формується
-	prev screen.Texture // текстура, яка була відправлення останнього разу у Receiver
-
-	mq messageQueue
-
-	stop    chan struct{}
-	stopReq bool
+	screen   screen.Screen
+	next     screen.Texture
+	prev     screen.Texture
+	state    State
+	mq       chan Operation
+	stop     chan struct{}
+	stopOnce sync.Once
 }
 
-var size = image.Pt(400, 400)
-
-// Start запускає цикл подій. Цей метод потрібно запустити до того, як викликати на ньому будь-які інші методи.
 func (l *Loop) Start(s screen.Screen) {
-	l.next, _ = s.NewTexture(size)
-	l.prev, _ = s.NewTexture(size)
+	l.screen = s
+	l.mq = make(chan Operation, 100)
+	l.stop = make(chan struct{})
+	l.state.Reset()
 
-	// TODO: стартувати цикл подій.
+	var err error
+	l.next, err = l.screen.NewTexture(image.Pt(800, 800))
+	if err != nil {
+		panic(err)
+	}
+
+	go l.eventLoop()
 }
 
-// Post додає нову операцію у внутрішню чергу.
-func (l *Loop) Post(op Operation) {
-	if update := op.Do(l.next); update {
-		l.Receiver.Update(l.next)
-		l.next, l.prev = l.prev, l.next
+func (l *Loop) eventLoop() {
+	for {
+		select {
+		case op := <-l.mq:
+			if op.Do(l.next, &l.state) {
+				l.Receiver.Update(l.next)
+				l.next, l.prev = l.prev, l.next
+
+				newTex, _ := l.screen.NewTexture(image.Pt(800, 800))
+				l.next = newTex
+			}
+		case <-l.stop:
+			return
+		}
 	}
 }
 
-// StopAndWait сигналізує про необхідність завершити цикл та блокується до моменту його повної зупинки.
+func (l *Loop) Post(op Operation) {
+	l.mq <- op
+}
+
 func (l *Loop) StopAndWait() {
-}
-
-// TODO: Реалізувати чергу подій.
-type messageQueue struct{}
-
-func (mq *messageQueue) push(op Operation) {}
-
-func (mq *messageQueue) pull() Operation {
-	return nil
-}
-
-func (mq *messageQueue) empty() bool {
-	return false
+	l.stopOnce.Do(func() {
+		close(l.stop)
+	})
 }
