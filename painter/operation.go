@@ -1,10 +1,18 @@
 package painter
 
-type Texture interface{}
+// Реализация операций
+func (op OperationFunc) Draw(t Texture) {
+    op(t)
+}
 
-type OperationFunc func(Texture)
+func (r BgRect) Draw(t Texture) {
+    // Логика рисования прямоугольника
+}
 
-type BgRect struct { X1, Y1, X2, Y2 float32 }
-type Move struct { X, Y float32 }
-type TFigure struct { X, Y float32 }
-type WhiteFill struct{}
+func (m Move) Draw(t Texture) {
+    // Логика перемещения
+}
+
+func (f TFigure) Draw(t Texture) {
+    // Логика рисования T-фигуры
+}
