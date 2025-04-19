@@ -1,8 +1,11 @@
 package main
 
-"github.com/MikhailoSafronov/architecture-lab-3/ui"
-"github.com/MikhailoSafronov/architecture-lab-3/painter"
-"github.com/MikhailoSafronov/architecture-lab-3/painter/lang"
+import (
+    "log"
+    "github.com/roman-mazur/architecture-lab-3/ui"
+    "github.com/roman-mazur/architecture-lab-3/painter"
+    "github.com/roman-mazur/architecture-lab-3/painter/lang"
+)
 
 func main() {
     w, err := ui.NewWindow()
