@@ -9,4 +9,3 @@ type Move struct{}
 type TFigure struct{}
 type WhiteFill struct{}
 type GreenFill struct{}
-type UpdateOp struct{}
