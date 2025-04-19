@@ -2,7 +2,7 @@ package painter_test
 
 import (
     "testing"
-    "github.com/roman-mazur/architecture-lab-3/painter"
+    "github.com/MikhailoSafronov/architecture-lab-3/painter"
     "github.com/stretchr/testify/assert"
 )
 
