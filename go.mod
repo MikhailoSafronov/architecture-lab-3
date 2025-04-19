@@ -7,6 +7,7 @@ require (
     golang.org/x/exp/shiny v0.0.0-20250408133849-7e4ce0ab07d0
     golang.org/x/image v0.25.0
     golang.org/x/mobile v0.0.0-20250305212854-3a7bc9f8a4de
+	github.com/stretchr/testify v1.8.4
 )
 
 require (
