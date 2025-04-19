@@ -45,6 +45,9 @@ func NewWindow() (*Visualizer, error) {
         Debug: false,
     }, nil
 }
+func (pw *Visualizer) Run() {
+    pw.Main() // Викликаємо існуючий метод Main
+}
 func (pw *Visualizer) run(s screen.Screen) {
 	w, err := s.NewWindow(&screen.NewWindowOptions{
 		Title:  pw.Title,
