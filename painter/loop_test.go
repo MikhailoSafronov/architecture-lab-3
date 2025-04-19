@@ -5,7 +5,6 @@ import (
 	"image/color"
 	"image/draw"
 	"testing"
-
 	"golang.org/x/exp/shiny/screen"
 )
 
@@ -29,28 +28,28 @@ func TestLoop_Post(t *testing.T) {
 		go l.Post(BgColorOp{Color: color.RGBA{G: 0xff, A: 0xff}})
 	}
 
-	l.Post(OperationFunc(func(t screen.Texture, s *State) bool {
+	l.Post(TestOpFunc(func(t screen.Texture, s *State) bool {
 		testOps = append(testOps, "op 1")
-		l.Post(OperationFunc(func(t screen.Texture, s *State) bool {
+		l.Post(TestOpFunc(func(t screen.Texture, s *State) bool {
 			testOps = append(testOps, "op 2")
 			return false
 		}))
 		return false
 	}))
 
-	l.Post(OperationFunc(func(t screen.Texture, s *State) bool {
+	l.Post(TestOpFunc(func(t screen.Texture, s *State) bool {
 		testOps = append(testOps, "op 3")
 		return false
 	}))
 
 	l.StopAndWait()
-
 	// Перевірки...
 }
 
-type OperationFunc func(t screen.Texture, s *State) bool
+// Перейменовано OperationFunc на TestOpFunc, щоб уникнути конфлікту
+type TestOpFunc func(t screen.Texture, s *State) bool
 
-func (f OperationFunc) Do(t screen.Texture, s *State) bool {
+func (f TestOpFunc) Do(t screen.Texture, s *State) bool {
 	return f(t, s)
 }
 
@@ -64,12 +63,10 @@ func (tr *testReceiver) Update(t screen.Texture) {
 
 type mockScreen struct{}
 
-// Виправлено: додано _ для ігнорування параметра size
 func (m mockScreen) NewBuffer(_ image.Point) (screen.Buffer, error) {
 	panic("implement me")
 }
 
-// Виправлено: додано _ для ігнорування параметра size
 func (m mockScreen) NewTexture(_ image.Point) (screen.Texture, error) {
 	return new(mockTexture), nil
 }

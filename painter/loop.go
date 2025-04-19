@@ -17,7 +17,9 @@ type Loop struct {
 	stop     chan struct{}
 	stopOnce sync.Once
 }
-
+func NewLoop() *Loop {
+    return &Loop{}
+}
 func (l *Loop) Start(s screen.Screen) {
 	l.screen = s
 	l.mq = make(chan Operation, 100)

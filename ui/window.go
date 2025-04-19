@@ -39,7 +39,15 @@ func (pw *Visualizer) Main() {
 func (pw *Visualizer) Update(t screen.Texture) {
 	pw.tx <- t
 }
-
+func NewWindow() (*Visualizer, error) {
+    return &Visualizer{
+        Title: "Painter App",
+        Debug: false,
+    }, nil
+}
+func (pw *Visualizer) Run() {
+    pw.Main() // Викликаємо існуючий метод Main
+}
 func (pw *Visualizer) run(s screen.Screen) {
 	w, err := s.NewWindow(&screen.NewWindowOptions{
 		Title:  pw.Title,
