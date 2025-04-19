@@ -7,7 +7,6 @@ import (
 )
 
 func TestBgRectOperation(t *testing.T) {
-    op := painter.BgRect{X1: 0.1, Y1: 0.2, X2: 0.3, Y2: 0.4}
-    assert.Equal(t, float32(0.1), op.X1)
-    
+    op := painter.BgRectOp{X1: 0.1, Y1: 0.2, X2: 0.3, Y2: 0.4}
+    assert.Equal(t, float64(0.1), op.X1)
 }
