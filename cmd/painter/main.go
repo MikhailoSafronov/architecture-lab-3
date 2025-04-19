@@ -1,29 +1,23 @@
 package main
 
 import (
-	"net/http"
-
-	"github.com/roman-mazur/architecture-lab-3/painter"
-	"github.com/roman-mazur/architecture-lab-3/painter/lang"
-	"github.com/roman-mazur/architecture-lab-3/ui"
+    "log"
+    "github.com/roman-mazur/architecture-lab-3/ui"
+    "github.com/roman-mazur/architecture-lab-3/painter"
+    "github.com/roman-mazur/architecture-lab-3/lang"
 )
 
 func main() {
-	var (
-		pv     ui.Visualizer
-		opLoop painter.Loop
-		parser lang.Parser
-	)
+    w, err := ui.NewWindow()
+    if err != nil {
+        log.Fatal(err)
+    }
 
-	pv.Title = "Painter"
-	pv.OnScreenReady = opLoop.Start
-	opLoop.Receiver = &pv
+    loop := painter.NewLoop()
+    loop.Start(w)
 
-	go func() {
-		http.Handle("/", lang.HttpHandler(&opLoop, &parser))
-		_ = http.ListenAndServe("localhost:17000", nil)
-	}()
+    handler := lang.NewHandler(loop)
+    handler.StartServer()
 
-	pv.Main()
-	opLoop.StopAndWait()
+    w.Run()
 }
