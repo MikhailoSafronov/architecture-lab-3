@@ -2,6 +2,7 @@ package main
 
 import (
     "log"
+    "golang.org/x/exp/shiny/screen" // Додати цей імпорт
     "github.com/roman-mazur/architecture-lab-3/ui"
     "github.com/roman-mazur/architecture-lab-3/painter"
     "github.com/roman-mazur/architecture-lab-3/painter/lang"
@@ -15,7 +16,7 @@ func main() {
 
     loop := painter.NewLoop()
     
-    // Змінити цю частину
+    // Встановлюємо колбек, який буде викликаний коли screen буде готовий
     w.OnScreenReady = func(s screen.Screen) {
         loop.Start(s)
     }
@@ -23,5 +24,5 @@ func main() {
     handler := lang.NewHandler(loop)
     handler.StartServer()
 
-    w.Run() // Тепер викликаємо публічний метод Run
+    w.Run()
 }
