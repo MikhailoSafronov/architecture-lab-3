@@ -14,10 +14,14 @@ func main() {
     }
 
     loop := painter.NewLoop()
-    loop.Start(w)
+    
+    // Змінити цю частину
+    w.OnScreenReady = func(s screen.Screen) {
+        loop.Start(s)
+    }
 
     handler := lang.NewHandler(loop)
     handler.StartServer()
 
-    w.Run()
+    w.Run() // Тепер викликаємо публічний метод Run
 }
