@@ -3,7 +3,7 @@ package lang
 import (
     "strings"
     "strconv"
-    "github.com/MikhailoSafronov/architecture-lab-3/painter"
+    "github.com/roman-mazur/architecture-lab-3/painter"
 )
 
 type Parser struct{}
